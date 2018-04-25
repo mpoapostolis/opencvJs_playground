@@ -1,26 +1,29 @@
 function onOpenCvReady() {
   const inputElement = document.getElementById('fileInput');
-  inputElement.addEventListener('change', e => {
-    let img = new Image();
-    img.src = URL.createObjectURL(e.target.files[0]);
-    img.onload = function() {
-      let src = cv.imread(img);
-      let dst = new cv.Mat();
+  let grayMat = new cv.Mat();
+  let faceCascade = new cv.CascadeClassifier();
+  if (faceCascade.load('haarcascade_frontalface_default'))
+    console.log('ok');
+  else console.log('fuck offs');
 
-      let low = new cv.Mat(src.rows, src.cols, src.type(), [0, 0, 0, 0]);
-      let high = new cv.Mat(src.rows, src.cols, src.type(), [
-        255,
-        255,
-        150,
-        255,
-      ]);
-      cv.inRange(src, low, high, dst);
+  let msize = new cv.Size(0, 0);
+  let faces = new cv.RectVector();
 
-      cv.imshow('canvasIn', src);
-      cv.imshow('canvasOut', dst);
-      src.delete();
-      dst.delete();
-    };
-  });
+  // inputElement.addEventListener('change', e => {
+  // const url = URL.createObjectURL(e.target.files[0]);
+  const img = new Image();
+  img.src = 'lena.png';
+  img.onload = function() {
+    const imgMat = cv.imread(img);
+    cv.cvtColor(imgMat, grayMat, cv.COLOR_RGBA2GRAY);
+    // faceCascade.detectMultiScale(grayMat, faces, 1.1, 3, 0, msize, msize);
+
+    // cv.imshow('canvasIn', imgMat);
+    // cv.imshow('canvasOut', grayMat);
+    faceCascade.delete();
+    imgMat.delete();
+    grayMat.delete();
+  };
+  // });
   document.getElementById('status').innerHTML = 'OpenCV.js is ready.';
 }
